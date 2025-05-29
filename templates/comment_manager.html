@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/comment_manager_style.css') }}">
 </head>
 <body>
-    <div style="position: fixed; top: 1.2rem; right: 2.2rem; z-index: 100;">
-        <div class="app-name" style="font-size:2.2rem;font-weight:900;color:#FF0000;letter-spacing:1.2px;font-family:'Segoe UI Black','Segoe UI',Arial,sans-serif;text-shadow:0 2px 12px rgba(255,0,0,0.07);">CommentIQ</div>
-    </div>
+    <div class="app-name">CommentIQ</div>
 
     <div class="container">
         <!-- Left Panel -->
@@ -38,8 +36,8 @@
                         Suggestions
                     </label>
                 </div>
-                <div style="margin-top: 2rem;">
-                    <a href="/static" style="color: #FF0000; text-decoration: none;">← Back to Home</a>
+                <div class="back-link">
+                    <a href="/video/{{ session['video_id'] }}">← Go Back</a>
                 </div>
             </div>
         </div>
@@ -48,17 +46,10 @@
         <div class="right-panel">
             <div class="comments-header">
                 <h2>Comments</h2>
-                <div class="sort-options">
-                    <select id="sort-select">
-                        <option value="recent">Most Recent</option>
-                        <option value="likes">Most Likes</option>
-                        <option value="replies">Most Replies</option>
-                    </select>
-                </div>
             </div>
             <div class="comments-container">
                 <!-- Comments will be loaded here dynamically -->
-                <p style="text-align: center; color: #666;">Loading comments...</p>
+                <p class="loading-message">Loading comments...</p>
             </div>
         </div>
     </div>

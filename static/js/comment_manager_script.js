@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Get DOM elements
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
-    const sortSelect = document.getElementById('sort-select');
     const filters = {
         positive: document.getElementById('positive-filter'),
         negative: document.getElementById('negative-filter'),
@@ -108,16 +107,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Convert to comment format
         const searchResults = [];
         data.clusters.forEach(cluster => {
-            cluster.all_comments.forEach((text, idx) => {
+            cluster.all_comments.forEach((comment, idx) => {
                 searchResults.push({
                     id: `search-${cluster.id}-${idx}`,
-                    text: text,
+                    text: comment.text || comment,
                     type: 'custom',
-                    username: 'Viewer',
-                    timestamp: 'Recent',
-                    likes: Math.floor(cluster.avg_likes),
-                    replies: 0,
-                    cluster_summary: cluster.summary
+                    author: comment.author,
+                    timestamp: 'Recent'
                 });
             });
         });
@@ -143,16 +139,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             const comments = [];
 
             result.clusters.forEach(cluster => {
-                cluster.representative_comments.forEach((text, idx) => {
+                cluster.representative_comments.forEach((comment, idx) => {
                     comments.push({
                         id: `${category}-${cluster.id}-${idx}`,
-                        text: text,
+                        text: comment.text || comment,
                         type: mapCategoryToType(category),
-                        username: `Viewer`,
-                        timestamp: 'Recent',
-                        likes: Math.floor(cluster.avg_likes),
-                        replies: 0,
-                        cluster_summary: cluster.summary
+                        author: comment.author,
+                        timestamp: 'Recent'
                     });
                 });
             });
@@ -230,63 +223,29 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         currentComments = commentsToShow;
-        handleSort(); // Apply current sort
-    }
-
-    // Sort functionality
-    function handleSort() {
-        const sortBy = sortSelect.value;
-        const sortedComments = [...currentComments].sort((a, b) => {
-            switch (sortBy) {
-                case 'recent':
-                    return 0; // Keep original order
-                case 'likes':
-                    return b.likes - a.likes;
-                case 'replies':
-                    return b.replies - a.replies;
-                default:
-                    return 0;
-            }
-        });
-
-        displayComments(sortedComments);
+        displayComments(commentsToShow);
     }
 
     // Display comments
     function displayComments(commentsToShow) {
         const container = document.querySelector('.comments-container');
-        const existingHeader = container.querySelector('.search-results-header');
-
-        if (commentsToShow.length === 0) {
-            container.innerHTML = (existingHeader ? existingHeader.outerHTML : '') +
-                '<p class="no-comments">No comments found</p>';
-            return;
-        }
-
-        const commentsHTML = commentsToShow.map(comment => `
+        const commentsHtml = commentsToShow.map(comment => `
             <div class="comment-card">
                 <div class="comment-header">
-                    <img src="https://ui-avatars.com/api/?name=${comment.username}&background=fff7f7&color=FF0000" alt="User Avatar" class="user-avatar">
+                    <img src="${comment.author?.profileImageUrl || '/static/images/user-avatar.png'}" alt="User Avatar" class="user-avatar">
                     <div class="comment-info">
-                        <h3 class="username">${comment.username}</h3>
-                        <span class="timestamp">${comment.timestamp}</span>
+                        <div class="username">${escapeHtml(comment.author?.name || 'Anonymous')}</div>
+                        <div class="timestamp">${comment.timestamp}</div>
                     </div>
-                    <div class="comment-type ${comment.type}">${capitalizeFirst(comment.type)}</div>
+                    <span class="comment-type ${comment.type}">${capitalizeFirst(comment.type)}</span>
                 </div>
-                <p class="comment-text">${escapeHtml(comment.text)}</p>
-                ${comment.cluster_summary ? `<p class="cluster-info">Theme: "${comment.cluster_summary}"</p>` : ''}
-                <div class="comment-stats">
-                    <span>❤️ ${comment.likes} likes</span>
-                    <span>💬 ${comment.replies} replies</span>
+                <div class="comment-text">
+                    ${escapeHtml(comment.text)}
                 </div>
             </div>
         `).join('');
 
-        if (existingHeader) {
-            container.innerHTML = existingHeader.outerHTML + commentsHTML;
-        } else {
-            container.innerHTML = commentsHTML;
-        }
+        container.innerHTML = commentsHtml || '<p class="no-results">No comments found</p>';
     }
 
     // Add advanced options UI
@@ -353,9 +312,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        // Create a textarea element to decode HTML entities
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = text;
+        // Get decoded text and trim any leading/trailing whitespace
+        const decodedText = textarea.value;
+        // Replace line breaks with proper HTML line breaks and remove extra spaces
+        return decodedText
+            .replace(/\r?\n/g, '<br>')
+            .replace(/^\s+/gm, ''); // Remove leading spaces from each line
     }
 
     function showError(message) {
@@ -385,7 +350,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     searchInput.addEventListener('keyup', (e) => {
         if (e.key === 'Enter') handleSearch();
     });
-    sortSelect.addEventListener('change', handleSort);
 
     // Add event listeners for filters
     Object.values(filters).forEach(filter => {

@@ -25,6 +25,7 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     background: linear-gradient(135deg, #fff9f9 0%, #fff5f5 50%, #fff9f9 100%);
+    padding-top: 4rem; /* Add padding to prevent overlap with the app name */
 }
 
 .container {
@@ -128,7 +129,6 @@ body {
 
 .comments-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
@@ -136,20 +136,6 @@ body {
 .comments-header h2 {
     color: var(--primary-red);
     font-size: 1.5rem;
-}
-
-#sort-select {
-    padding: 0.5rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: 15px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#sort-select:focus {
-    border-color: var(--primary-red);
-    box-shadow: 0 0 0 3px var(--bubble-color);
 }
 
 .comments-container {
@@ -163,7 +149,7 @@ body {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 15px;
-    padding: 1.2rem;
+    padding: 1.5rem;
     margin-bottom: 1rem;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--border-color);
@@ -179,7 +165,8 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
 }
 
 .user-avatar {
@@ -187,6 +174,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    background-color: var(--background-light);
 }
 
 .comment-info {
@@ -197,6 +185,8 @@ body {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-dark);
+    word-break: break-word;
+    max-width: 200px;
 }
 
 .timestamp {
@@ -232,9 +222,24 @@ body {
 }
 
 .comment-text {
+    font-size: 1rem;
+    line-height: 1.8;
     color: var(--text-dark);
-    margin-bottom: 0.8rem;
-    line-height: 1.5;
+    margin: 1rem 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 1rem 1.2rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 3px solid var(--bubble-color);
+    text-indent: 0;
+}
+
+.comment-text br {
+    display: block;
+    content: "";
+    margin-top: 0.8rem;
 }
 
 .comment-stats {
@@ -242,6 +247,13 @@ body {
     gap: 1rem;
     color: var(--text-gray);
     font-size: 0.9rem;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--text-gray);
+    margin-top: 2rem;
+    font-size: 1.1rem;
 }
 
 /* Scrollbar Styles */
@@ -275,4 +287,38 @@ body {
     .comments-container {
         max-height: 600px;
     }
+}
+
+.app-name {
+    position: fixed;
+    top: 1.2rem;
+    left: 2.2rem; /* Changed from right to left */
+    z-index: 100;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--primary-red);
+    letter-spacing: 1.2px;
+    font-family: 'Segoe UI Black', 'Segoe UI', Arial, sans-serif;
+    text-shadow: 0 2px 12px rgba(255, 0, 0, 0.07);
+}
+
+.back-link {
+    margin-top: 2rem;
+}
+
+.back-link a {
+    color: var(--primary-red);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.back-link a:hover {
+    color: var(--dark-red);
+}
+
+.loading-message {
+    text-align: center;
+    color: var(--text-gray);
+    margin-top: 2rem;
+    font-size: 1.1rem;
 } 
