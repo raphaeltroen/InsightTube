@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Manager - CommentIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/comment_manager_style.css') }}">
+</head>
+<body>
+    <div style="position: fixed; top: 1.2rem; right: 2.2rem; z-index: 100;">
+        <div class="app-name" style="font-size:2.2rem;font-weight:900;color:#FF0000;letter-spacing:1.2px;font-family:'Segoe UI Black','Segoe UI',Arial,sans-serif;text-shadow:0 2px 12px rgba(255,0,0,0.07);">CommentIQ</div>
+    </div>
+
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="search-section">
+                <h2>Search Comments</h2>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search for comments or topics...">
+                    <button id="search-btn">Search</button>
+                </div>
+                <div class="filter-options">
+                    <label class="filter-label">
+                        <input type="checkbox" id="positive-filter" checked>
+                        Positive Comments
+                    </label>
+                    <label class="filter-label">
+                        <input type="checkbox" id="negative-filter" checked>
+                        Negative Comments
+                    </label>
+                    <label class="filter-label">
+                        <input type="checkbox" id="questions-filter" checked>
+                        Questions
+                    </label>
+                    <label class="filter-label">
+                        <input type="checkbox" id="suggestions-filter" checked>
+                        Suggestions
+                    </label>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <a href="/static" style="color: #FF0000; text-decoration: none;">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="comments-header">
+                <h2>Comments</h2>
+                <div class="sort-options">
+                    <select id="sort-select">
+                        <option value="recent">Most Recent</option>
+                        <option value="likes">Most Likes</option>
+                        <option value="replies">Most Replies</option>
+                    </select>
+                </div>
+            </div>
+            <div class="comments-container">
+                <!-- Comments will be loaded here dynamically -->
+                <p style="text-align: center; color: #666;">Loading comments...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/comment_manager_script.js') }}"></script>
+</body>
+</html>

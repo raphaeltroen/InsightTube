@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggestions - CommentIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/suggestions_style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="left-card">
+            <h2>What viewers want to see</h2>
+            <ul class="viewer-list">
+                <li>Loading viewer interests...</li>
+            </ul>
+            <div style="margin-top: 2rem;">
+                <a href="/static" style="color: #FF0000; text-decoration: none; font-size: 0.9rem;">← Back to Home</a>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="app-header">
+                <div class="profile-pic">
+                    <img src="https://ui-avatars.com/api/?name=U&background=fff7f7&color=FF0000&size=72" alt="Profile" style="width:100%;height:100%;object-fit:cover;" />
+                </div>
+                <div class="app-name">CommentIQ</div>
+            </div>
+            <div class="tab-info-suggestions-wrap">
+                <div class="tab-info">Suggestions</div>
+                <div class="suggestion-section">
+                    <div class="suggestion-info">These are future video ideas for you, the content creator, based on what your audience is interested in!</div>
+                    <div class="suggestion-buttons">
+                        <div class="suggestion-btn">Loading suggestions...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/suggestions_script.js') }}"></script>
+</body>
+</html>

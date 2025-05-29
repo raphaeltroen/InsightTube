@@ -1,0 +1,278 @@
+/* Variables for consistent theming */
+:root {
+    --primary-red: #FF0000;
+    --dark-red: #cc0000;
+    --background-light: #fff9f9;
+    --text-dark: #333333;
+    --text-gray: #666666;
+    --box-background: #ffffff;
+    --box-hover: #f8f8f8;
+    --border-color: #e0e0e0;
+    --bubble-color: rgba(255, 0, 0, 0.1);
+    --shadow-color: rgba(255, 0, 0, 0.1);
+}
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fff9f9 0%, #fff5f5 50%, #fff9f9 100%);
+}
+
+.container {
+    max-width: 1400px;
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    gap: 2rem;
+}
+
+/* Left Panel Styles */
+.left-panel {
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.search-section {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-red);
+}
+
+.search-section h2 {
+    color: var(--primary-red);
+    margin-bottom: 1.2rem;
+    font-size: 1.5rem;
+}
+
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#search-input {
+    flex: 1;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#search-input:focus {
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px var(--bubble-color);
+}
+
+#search-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#search-btn:hover {
+    background-color: var(--dark-red);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.filter-label:hover {
+    background-color: var(--bubble-color);
+}
+
+/* Right Panel Styles */
+.right-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.comments-header h2 {
+    color: var(--primary-red);
+    font-size: 1.5rem;
+}
+
+#sort-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#sort-select:focus {
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px var(--bubble-color);
+}
+
+.comments-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+/* Comment Card Styles */
+.comment-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.comment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-info {
+    flex: 1;
+}
+
+.username {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+}
+
+.comment-type {
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.comment-type.positive {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #2e7d32;
+}
+
+.comment-type.negative {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #c62828;
+}
+
+.comment-type.question {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #1565c0;
+}
+
+.comment-type.suggestion {
+    background-color: rgba(156, 39, 176, 0.1);
+    color: #7b1fa2;
+}
+
+.comment-text {
+    color: var(--text-dark);
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+
+.comment-stats {
+    display: flex;
+    gap: 1rem;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-red);
+    border-radius: 4px;
+    opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .left-panel {
+        max-width: none;
+    }
+
+    .right-panel {
+        height: auto;
+    }
+
+    .comments-container {
+        max-height: 600px;
+    }
+} 

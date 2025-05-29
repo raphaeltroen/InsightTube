@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Comments Reader</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_page_style.css') }}">
+</head>
+<body>
+    <div style="position: fixed; top: 1.2rem; right: 2.2rem; z-index: 1000;">
+        <div class="app-name" style="font-size:2.2rem;font-weight:900;color:#FF0000;letter-spacing:1.2px;font-family:'Segoe UI Black','Segoe UI',Arial,sans-serif;text-shadow:0 2px 12px rgba(255,0,0,0.07);">CommentIQ</div>
+    </div>
+    <div class="container">
+        <div class="input-section">
+            <h1>YouTube Comments Reader</h1>
+            <div class="url-input-container">
+                <input type="text" id="url-input" placeholder="Enter YouTube URL">
+                <button id="submit-btn">Read Comments</button>
+            </div>
+        </div>
+        <div style="display: flex; width: 100%; margin-top: -1.5rem;">
+            <div class="instruction-bubble" style="margin-left:calc(50% - 250px); margin-top:0.5rem;">
+                <p>📝 How to use:</p>
+                <ol>
+                    <li>Copy a YouTube video URL</li>
+                    <li>Paste it in the input field above</li>
+                    <li>Click "Read Comments" to analyze</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Example comments that will float around -->
+        <div class="floating-comments">
+            <div class="comment-bubble">Great video! Really helped me understand the topic better!</div>
+            <div class="comment-bubble">This content is amazing! Keep it up! 👍</div>
+            <div class="comment-bubble">Would love to see more content like this 🎉</div>
+            <div class="comment-bubble">Very informative, thanks for sharing!</div>
+            <div class="comment-bubble">Subscribed! Can't wait for the next video 🌟</div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main_page_script.js') }}"></script>
+</body>
+</html>
