@@ -105,6 +105,8 @@ async function loadAnalysis(forceRefresh = false) {
             window.analysisData.results = data.results;
             window.analysisData.fromCache = data.from_cache;
 
+            console.log('Analysis results:', data.results);
+
             // Display results
             displayAnalysisResults(data.results);
 
@@ -113,6 +115,7 @@ async function loadAnalysis(forceRefresh = false) {
                 showNotification('Using cached analysis results', 'info');
             }
         } else {
+            console.error('Analysis failed:', data.error);
             conclusionsContent.innerHTML = '<p class="error">Failed to load analysis. Please try again.</p>';
         }
     } catch (error) {
@@ -124,6 +127,7 @@ async function loadAnalysis(forceRefresh = false) {
 }
 
 function displayAnalysisResults(results) {
+    console.log('Displaying results:', results);
     const conclusionsContent = document.querySelector('.conclusions-content');
 
     // Build conclusions HTML
@@ -147,7 +151,7 @@ function displayAnalysisResults(results) {
         </div>
     `;
 
-    // Key themes from each category
+    // Key insights from each category
     const categoryIcons = {
         'positive': '👍',
         'negative': '👎',
@@ -156,27 +160,18 @@ function displayAnalysisResults(results) {
     };
 
     for (const [category, result] of Object.entries(results)) {
-        if (result.clusters && result.clusters.length > 0) {
+        if (result.category_summary) {
             const icon = categoryIcons[category] || '📝';
             html += `
                 <div class="category-summary">
                     <h4>${icon} ${capitalizeFirst(category)} Comments 
                         <span class="percentage">${result.percentage.toFixed(1)}%</span>
                     </h4>
-                    <ul>
+                    <div class="category-insight">
+                        ${result.category_summary}
+                    </div>
+                </div>
             `;
-
-            // Show top 2 clusters
-            result.clusters.slice(0, 2).forEach(cluster => {
-                html += `
-                    <li>
-                        <span class="cluster-summary">${cluster.summary}</span>
-                        <span class="cluster-size">${cluster.size} comments</span>
-                    </li>
-                `;
-            });
-
-            html += '</ul></div>';
         }
     }
 
@@ -233,14 +228,14 @@ function displayTypicalViewer(profile) {
     const likesSection = document.querySelector('.likes ul');
     const dislikesSection = document.querySelector('.dislikes ul');
 
-    // Update likes
+    // Update likes with bullet points
     likesSection.innerHTML = profile.likes.map(like =>
-        `<li>✓ ${like}</li>`
+        `<li>${like}</li>`
     ).join('');
 
-    // Update dislikes
+    // Update dislikes with bullet points
     dislikesSection.innerHTML = profile.dislikes.map(dislike =>
-        `<li>✗ ${dislike}</li>`
+        `<li>${dislike}</li>`
     ).join('');
 
     // Update profile details

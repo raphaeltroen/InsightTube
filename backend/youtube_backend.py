@@ -35,6 +35,7 @@ class AnalysisResult:
     clusters: List[Cluster]
     total_comments_found: int
     percentage_of_total: float
+    category_summary: str
 
 
 class YouTubeAnalysisBackend:
@@ -195,12 +196,17 @@ class YouTubeAnalysisBackend:
 
         print(f"Found {total_found} {filter_query} comments ({percentage:.1f}%)")
 
+        # Generate category-level summary based on cluster summaries
+        cluster_summaries = [c.summary for c in clusters if c.summary]
+        category_summary = self.analyzer.summarize_category(filter_query, cluster_summaries)
+
         return AnalysisResult(
             category=filter_query,
             threshold=threshold,
             clusters=clusters,
             total_comments_found=total_found,
-            percentage_of_total=percentage
+            percentage_of_total=percentage,
+            category_summary=category_summary
         )
 
     def get_video_info(self) -> Optional[VideoData]:
@@ -364,7 +370,8 @@ def export_results(results: Dict[str, AnalysisResult], video_data: VideoData,
                     "top_comments": cluster.representative_comments[:3]
                 }
                 for cluster in result.clusters
-            ]
+            ],
+            "category_summary": result.category_summary
         }
 
     with open(filename, 'w') as f:

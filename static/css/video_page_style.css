@@ -298,3 +298,41 @@ a.feature-box:hover, a.feature-box:focus {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transform: translateY(-5px);
 }
+
+.category-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.category-summary h4 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+.category-insight {
+    color: var(--text-dark);
+    line-height: 1.6;
+    font-size: 1rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-red);
+    margin-top: 0.5rem;
+}
+
+.percentage {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    font-weight: normal;
+    padding: 0.2rem 0.6rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}

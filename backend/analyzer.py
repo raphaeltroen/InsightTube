@@ -683,6 +683,37 @@ Generate {num_examples} comments for the category: "{category}"
                 summaries[cid] = f"[ERR] summary failed: {exc}"
         return summaries
 
+    def summarize_category(self, category: str, cluster_summaries: List[str], model: str = GENERATION_MODEL) -> str:
+        """Generate a high-level summary for a category based on its cluster summaries."""
+        if not cluster_summaries:
+            return "No significant patterns found."
+
+        model = genai.GenerativeModel(model)
+        summaries_text = "\n".join([f"- {summary}" for summary in cluster_summaries])
+
+        prompt = f"""Based on these summaries of comment clusters for {category} comments, provide a concise 2-3 sentence overview 
+that captures the main patterns and insights. Focus on what viewers are consistently saying or feeling.
+
+Cluster Summaries:
+{summaries_text}
+
+Overview:"""
+
+        try:
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    temperature=0.3,
+                    max_output_tokens=150,
+                    top_k=40,
+                    top_p=0.8,
+                )
+            )
+            return response.text.strip()
+        except Exception as e:
+            print(f"Error generating category summary: {e}")
+            return "Error generating summary."
+
     # ────────────────────────────────────────────────────────────────────────
     # Backward compatibility methods
     # ────────────────────────────────────────────────────────────────────────
@@ -751,3 +782,53 @@ Generate {num_examples} comments for the category: "{category}"
             results['summaries'] = self.summarize_clusters(results['clusters'])
 
         return results
+
+    def generate_concise_bullets(self, cluster_summaries: List[str], prompt_type: str, model: str = GENERATION_MODEL) -> List[str]:
+        """Generate concise, one-sentence bullet points from cluster summaries."""
+        if not cluster_summaries:
+            return []
+
+        model = genai.GenerativeModel(model)
+        summaries_text = "\n".join([f"- {summary}" for summary in cluster_summaries])
+
+        prompt = f"""Based on these summaries of {prompt_type} YouTube comments, generate 3-4 very concise, one-sentence bullet points.
+Each bullet point should capture a specific thing that viewers {'liked' if 'positive' in prompt_type.lower() else 'disliked'}.
+Make each point direct and minimal, focusing on one clear aspect.
+
+Summaries to convert:
+{summaries_text}
+
+Rules:
+- Each bullet must be a single sentence
+- Be direct and specific
+- Remove any redundant points
+- Start each point with a verb
+- Keep each point under 10 words if possible
+
+Bullet points:"""
+
+        try:
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    temperature=0.3,
+                    max_output_tokens=150,
+                    top_k=40,
+                    top_p=0.8,
+                )
+            )
+            
+            # Parse bullet points
+            bullets = []
+            for line in response.text.strip().split('\n'):
+                # Clean up the line
+                cleaned = line.strip()
+                # Remove bullet points, numbers, etc
+                cleaned = re.sub(r'^[\s>*•\-]+|^\d+[\.)]\s*', '', cleaned).strip()
+                if cleaned:
+                    bullets.append(cleaned)
+            
+            return bullets[:4]  # Return max 4 bullets
+        except Exception as e:
+            print(f"Error generating bullet points: {e}")
+            return ["Error generating bullet points."]

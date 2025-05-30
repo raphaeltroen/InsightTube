@@ -88,31 +88,50 @@
             border-radius: 15px;
             padding: 1.5rem;
             position: relative;
-        }
-
-        .likes {
-            border-left: 4px solid #4CAF50;
-        }
-
-        .dislikes {
-            border-left: 4px solid #f44336;
-        }
-
-        .feedback-bubble h3 {
-            color: #333;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
         }
 
         .feedback-bubble ul {
             list-style-type: none;
             color: #555;
+            margin: 0;
+            padding: 0;
         }
 
-        .feedback-bubble li {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+        .bullet-list li {
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
             line-height: 1.4;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .bullet-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
+
+        .likes .bullet-list li::before {
+            background-color: #4CAF50;
+        }
+
+        .dislikes .bullet-list li::before {
+            background-color: #f44336;
+        }
+
+        .feedback-bubble h3 {
+            color: #333;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .close-button {
@@ -191,14 +210,14 @@
             <div class="feedback-section">
                 <div class="feedback-bubble likes">
                     <h3>What They Like</h3>
-                    <ul>
+                    <ul class="bullet-list">
                         <li>Loading...</li>
                     </ul>
                 </div>
 
                 <div class="feedback-bubble dislikes">
-                    <h3>Areas for Improvement</h3>
-                    <ul>
+                    <h3>What They Didn't Like</h3>
+                    <ul class="bullet-list">
                         <li>Loading...</li>
                     </ul>
                 </div>

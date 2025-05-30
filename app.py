@@ -112,7 +112,7 @@ def process_video():
 
         # Initialize video (fetch comments and compute embeddings)
         start_time = time.time()
-        video_data = backend.initialize_video(video_url, max_comments=500)
+        video_data = backend.initialize_video(video_url, max_comments=10)
         print(f"Video initialization took {time.time() - start_time:.2f} seconds")
 
         # Store backend with caching wrapper
@@ -258,7 +258,8 @@ def batch_analyze():
             results[cat['name']] = {
                 'total_found': result.total_comments_found,
                 'percentage': result.percentage_of_total,
-                'clusters': clusters_data
+                'clusters': clusters_data,
+                'category_summary': result.category_summary
             }
 
         # Cache batch results
@@ -317,23 +318,16 @@ def get_typical_viewer():
         technical = cached_backend.search_comments('technical discussion', threshold=0.4, n_clusters=2,
                                                    popularity_impact=0.5)
 
-        # Extract insights
-        likes = []
-        dislikes = []
+        # Generate concise bullet points for likes and dislikes
+        positive_summaries = [cluster.summary for cluster in positive.clusters if cluster.size > 2]
+        negative_summaries = [cluster.summary for cluster in negative.clusters if cluster.size > 1]
+
+        likes = cached_backend.backend.analyzer.generate_concise_bullets(positive_summaries, "positive")
+        dislikes = cached_backend.backend.analyzer.generate_concise_bullets(negative_summaries, "negative")
+
+        # Extract other insights
         interests = []
         characteristics = []
-
-        # Process positive feedback - what they like
-        if positive.clusters:
-            for cluster in positive.clusters[:2]:
-                if cluster.size > 2:  # Only significant clusters
-                    likes.append(cluster.summary)
-
-        # Process negative feedback - what they dislike
-        if negative.clusters:
-            for cluster in negative.clusters[:2]:
-                if cluster.size > 1:
-                    dislikes.append(cluster.summary)
 
         # Process questions for interests
         if questions.clusters:
@@ -359,10 +353,9 @@ def get_typical_viewer():
         return jsonify({
             'success': True,
             'profile': {
-                'likes': likes[:4] if likes else ["Quality content", "Clear explanations", "Your presentation style"],
-                'dislikes': dislikes[:4] if dislikes else ["Long introductions", "Background music", "Unclear audio"],
-                'interests': interests[:3] if interests else ["Your topic area", "Learning new things",
-                                                              "Practical applications"],
+                'likes': likes if likes else ["Appreciates clear explanations", "Values quality content", "Enjoys the presentation style"],
+                'dislikes': dislikes if dislikes else ["Mentions audio quality issues", "Notes lengthy introductions", "Suggests better pacing"],
+                'interests': interests[:3] if interests else ["Your topic area", "Learning new things", "Practical applications"],
                 'characteristics': characteristics[:3] if characteristics else ["Engaged viewer", "Regular watcher"],
                 'engagement_level': engagement_level,
                 'stats': {
