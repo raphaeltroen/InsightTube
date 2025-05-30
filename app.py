@@ -66,7 +66,27 @@ def comments_page(video_id):
 
 @app.route('/suggestions/<video_id>')
 def suggestions_page(video_id):
-    return render_template('suggestions.html')
+    # Try to get video_data from cache or backend
+    video_data = None
+    if video_id in video_cache:
+        video_data = video_cache[video_id]
+    else:
+        # Try to get from backend if available
+        session_id = session.get('session_id')
+        if session_id and session_id in backends:
+            backend = backends[session_id].backend
+            if backend.video_data and backend.video_data.video_id == video_id:
+                video_data = {
+                    'title': backend.video_data.title,
+                    'channel': backend.video_data.channel,
+                    'views': backend.video_data.views,
+                    'likes': backend.video_data.likes,
+                    'comment_count': backend.video_data.comment_count,
+                    'thumbnail_url': backend.video_data.thumbnail_url,
+                    'channel_profile_pic': backend.video_data.channel_profile_pic,
+                    'total_fetched': len(backend.video_data.comments)
+                }
+    return render_template('suggestions.html', video_data=video_data)
 
 
 @app.route('/api/process', methods=['POST'])
@@ -127,6 +147,7 @@ def process_video():
             'likes': video_data.likes,
             'comment_count': video_data.comment_count,
             'thumbnail_url': video_data.thumbnail_url,
+             'channel_profile_pic': video_data.channel_profile_pic,
             'total_fetched': len(video_data.comments)
         }
         video_cache[video_id] = video_info
@@ -430,34 +451,47 @@ def get_suggestions():
         # Sort by support count and engagement
         all_suggestions.sort(key=lambda x: x['support_count'] * 2 + x['avg_engagement'], reverse=True)
 
-        # Analyze what viewers want to see more of
+        # Analyze what viewers want to see more of (actual comments)
         viewer_interests = []
-
-        # Specific content type requests
-        content_types = [
-            ('tutorial or how-to content', 'Tutorial videos'),
-            ('behind the scenes', 'Behind-the-scenes content'),
-            ('deep dive or detailed explanation', 'In-depth analysis videos'),
-            ('tips and tricks', 'Tips and tricks videos'),
-            ('beginner friendly', 'Beginner-friendly content'),
-            ('advanced topics', 'Advanced level content')
-        ]
-
-        for search_term, display_name in content_types:
-            result = cached_backend.search_comments(search_term, threshold=0.45, n_clusters=1, popularity_impact=0.5)
-            if result.total_comments_found > 2:
-                viewer_interests.append({
-                    'interest': display_name,
-                    'count': result.total_comments_found
-                })
-
-        # Sort interests by count
-        viewer_interests.sort(key=lambda x: x['count'], reverse=True)
+        # Use a more explicit prompt to find comments suggesting new content
+        prompt = (
+            "Find 3 comments in which viewers: "
+            "(1) request a type of video or content, "
+            "(2) suggest a new idea for a video, or "
+            "(3) describe a new idea they would like the creator to make. "
+            "Return only comments that clearly express a request or suggestion for new content or video ideas."
+        )
+        result = cached_backend.search_comments(prompt, threshold=0.4, n_clusters=3, popularity_impact=0.7)
+        # Collect up to 3 representative comments from the clusters
+        for cluster in result.clusters:
+            for comment in cluster.representative_comments:
+                if len(viewer_interests) < 3:
+                    viewer_interests.append(f'"{comment.strip()}"')
+                else:
+                    break
+            if len(viewer_interests) >= 3:
+                break
+        # If not enough, fallback to previous logic for remaining slots
+        if len(viewer_interests) < 3:
+            content_types = [
+                ('tutorial or how-to content', 'Tutorial videos'),
+                ('behind the scenes', 'Behind-the-scenes content'),
+                ('deep dive or detailed explanation', 'In-depth analysis videos'),
+                ('tips and tricks', 'Tips and tricks videos'),
+                ('beginner friendly', 'Beginner-friendly content'),
+                ('advanced topics', 'Advanced level content')
+            ]
+            for search_term, display_name in content_types:
+                fallback_result = cached_backend.search_comments(search_term, threshold=0.45, n_clusters=1, popularity_impact=0.5)
+                if fallback_result.total_comments_found > 2 and len(viewer_interests) < 3:
+                    viewer_interests.append(display_name)
+                if len(viewer_interests) >= 3:
+                    break
 
         return jsonify({
             'success': True,
             'suggestions': all_suggestions[:8],  # Top 8 suggestions
-            'viewer_interests': [item['interest'] for item in viewer_interests[:5]]  # Top 5 interests
+            'viewer_interests': viewer_interests[:3]  # Top 3 actual comments or fallback
         })
     except Exception as e:
         return jsonify({

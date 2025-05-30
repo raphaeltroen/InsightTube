@@ -58,12 +58,20 @@ function displaySuggestions(data) {
             ...defaultInterests.slice(0, Math.max(0, 5 - data.viewer_interests.length))
         ];
 
-        viewerList.innerHTML = interests.slice(0, 5).map((interest, idx) =>
-            `<li class="interest-item" style="animation-delay: ${idx * 0.1}s">
-                <span class="interest-icon">${getInterestIcon(interest)}</span>
-                ${interest}
-            </li>`
-        ).join('');
+        viewerList.innerHTML = interests.slice(0, 5).map((interest, idx) => {
+            // If the interest is a quoted comment, show a quote icon and style as a quote
+            if (interest.startsWith('"') && interest.endsWith('"')) {
+                return `<li class="interest-item quote-item" style="animation-delay: ${idx * 0.1}s">
+                    <span class="interest-icon">\u201C</span>
+                    <span class="interest-quote">${interest}</span>
+                </li>`;
+            } else {
+                return `<li class="interest-item" style="animation-delay: ${idx * 0.1}s">
+                    <span class="interest-icon">${getInterestIcon(interest)}</span>
+                    ${interest}
+                </li>`;
+            }
+        }).join('');
     } else {
         displayDefaultInterests();
     }

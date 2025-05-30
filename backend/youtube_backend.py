@@ -24,6 +24,7 @@ class VideoData:
     likes: int
     comment_count: int
     thumbnail_url: str
+    channel_profile_pic: str
     comments: List[Dict[str, Any]]
 
 
@@ -98,6 +99,26 @@ class YouTubeAnalysisBackend:
         if not video_info:
             raise ValueError("Video not found or API error")
 
+        # Fetch channel profile picture
+        channel_profile_pic = ""
+        try:
+            youtube = build('youtube', 'v3', developerKey=self.youtube_api_key)
+            channel_id = video_info['snippet']['channelId']
+            channel_request = youtube.channels().list(
+                part='snippet',
+                id=channel_id
+            )
+            channel_response = channel_request.execute()
+            if channel_response['items']:
+                channel_snippet = channel_response['items'][0]['snippet']
+                # Prefer high-res, fallback to medium/default
+                channel_profile_pic = channel_snippet['thumbnails'].get('high', channel_snippet['thumbnails'].get('medium', channel_snippet['thumbnails']['default']))['url']
+                print(f"[Channel Profile Pic] {channel_profile_pic}")
+        except Exception as e:
+            if self.debug:
+                print(f"Error fetching channel profile picture: {e}")
+            channel_profile_pic = ""
+
         # Fetch comments
         print(f"Fetching up to {max_comments} comments...")
         comments = self._fetch_comments(video_id, max_comments)
@@ -114,7 +135,8 @@ class YouTubeAnalysisBackend:
             views=int(video_info['statistics'].get('viewCount', 0)),
             likes=int(video_info['statistics'].get('likeCount', 0)),
             comment_count=int(video_info['statistics'].get('commentCount', 0)),
-            thumbnail_url=video_info['snippet']['thumbnails']['medium']['url'],
+            thumbnail_url=video_info['snippet']['thumbnails'].get('maxres', video_info['snippet']['thumbnails'].get('high', video_info['snippet']['thumbnails']['medium']))['url'],
+            channel_profile_pic=channel_profile_pic,
             comments=comments
         )
 
