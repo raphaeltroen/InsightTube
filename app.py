@@ -132,7 +132,7 @@ def process_video():
 
         # Initialize video (fetch comments and compute embeddings)
         start_time = time.time()
-        video_data = backend.initialize_video(video_url, max_comments=10)
+        video_data = backend.initialize_video(video_url, max_comments=250)
         print(f"Video initialization took {time.time() - start_time:.2f} seconds")
 
         # Store backend with caching wrapper
